@@ -1,6 +1,7 @@
 import argparse
 from pathlib import Path
 import json
+from gendiff.gendiff import generate_diff
 
 def parse_file(filename: str):
     fixtures_path = Path(__file__).parent.parent / "tests" / "fixtures"
@@ -19,6 +20,7 @@ def main():
     args = parser.parse_args()
     file1 = parse_file(args.first_file)
     file2 = parse_file(args.second_file)
-    print(file1, file2)
+    return generate_diff(file1, file2)
+    
 if __name__ == 'main':
     main()
