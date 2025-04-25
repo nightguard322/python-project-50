@@ -33,39 +33,41 @@ def generate_diff(file1: dict, file2: dict):
 def stylish(data: dict) -> str:
 
     def render(current, inner_space, res = []):
-        print(current)
         for key, inner_data in current.items():
             value = prepare_value(inner_data.get('value', None))
-
-            if (isinstance(value, dict)): #обработка вложенных словарей
-                value = to_string(value, inner_space * 2)
-                #Обработка вложенного словаря (обычного, без разметки)
             status = inner_data.get('status', None)
-            match status:
-                case 'removed':
-                    res.append(f"{INDENTS['removed']} {key}: {value}")
-                case 'added':
-                    res.append(f"{INDENTS['added']} {key}: {value}")
-                case 'changed':
-                    res.append(f"{INDENTS['removed']} {key}: {inner_data['old_value']}")
-                    res.append(f"{INDENTS['added']} {key}: {inner_data['new_value']}")
-                case 'nested':
-                    res.append(f"{INDENTS['unchanged']} {key}: {render(inner_data['value'], inner_space)}") #обработка вложенных дифов
-                case 'unchanged':
-                    res.append(f"{INDENTS['unchanged']} {key}: {value}")
-                case _:
-                    res.append(f"{INDENTS['unchanged']} {key}: {value}")
-            return res
+            if not status:
+                if isinstance(value, dict): #обработка вложенных словарей
+                    value = to_string(value, inner_space * 2)
+                res.append(f"{INDENTS['unchanged']} {key}: {value}")
+            else:
+                print(key, status)
+                match status:
+                    case 'removed':
+                        res.append(f"{INDENTS['removed']} {key}: {value}")
+                    case 'added':
+                        res.append(f"{INDENTS['added']} {key}: {value}")
+                    case 'changed':
+                        res.append(f"{INDENTS['removed']} {key}: {inner_data['old_value']}")
+                        res.append(f"{INDENTS['added']} {key}: {inner_data['new_value']}")
+                    case 'nested':
+                        value = render(inner_data['value'], inner_space)
+                        res.append(f"{INDENTS['unchanged']} {key}: {value}") #обработка вложенных дифов
+                    case 'unchanged':
+                        res.append(f"{INDENTS['unchanged']} {key}: {value}")
+        return res
 
     inner_strings = render(data, INDENTS['nested'])
-    return "{\n" + "\n".join(inner_strings) + "\n}"
+    # print(inner_strings)
+    return "\n".join(['{', *inner_strings, '}'])
 
 def to_string(data: str, inner_space: str):
+    if isinstance(data, dict):
+        value = [to_string(item) for item in data]
     string = [f"{inner_space}{k}: {v}" for k, v in data.items()]
     return "\n".join(['{', *string, '}'])
 
 def prepare_value(value: str):
-
     if value == True:
         value = 'true'
     

@@ -23,5 +23,6 @@ def main():
 
     return generate_diff(file1, file2)
     
+    
 if __name__ == 'main':
     main()
