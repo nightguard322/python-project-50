@@ -1,8 +1,9 @@
 INDENTS = {
-    'removed': '- ',
-    'added': '+ ',
-    'empty': '  ',
-    'unchanged': '  '
+    'removed': '-',
+    'added': '+',
+    'empty': ' ',
+    'unchanged': ' ',
+    'changed': 'hui'
 }
 def generate_diff(file1: dict, file2: dict):
 
@@ -29,7 +30,7 @@ def generate_diff(file1: dict, file2: dict):
 
 def stylish(data: dict) -> str:
 
-    def render(current, depth=0):
+    def render(current, depth):
         res = []
         for key, inner_data in current.items():
             value = prepare_value(inner_data.get('value', inner_data))
@@ -37,31 +38,31 @@ def stylish(data: dict) -> str:
 
             if status == 'changed':
                 old_value, new_value = value
-                res.append(to_string(key, old_value, depth, 'removed'))
-                res.append(to_string(key, new_value, depth, 'added'))
-            elif status == 'nested':
-                value = render(value, depth + 4)
-                res.append(to_string(key, value, depth))
-            else:
-                res.append(to_string(key, value, depth, status))
-        closing_bracket_indent = (depth - 2) * ' '
-        return "\n".join(["{", *res, f"{closing_bracket_indent}{"}"}"])
+                res.append(to_string(key, old_value, depth + 4, 'removed'))
+                res.append(to_string(key, new_value, depth + 4, 'added'))
 
-    inner_strings = render(data)
+            if status == 'nested':
+                strings_list = render(value, depth + 4) #вернется список столк
+                
+                # возможно тут надо через join вернуть строки со скобками {}
+            res.append(to_string(key, value, depth + 4, status))
+
+        return res #список строк
+
+    inner_strings = render(data, 2)
     return inner_strings
 
 def to_string(key, value, depth = 0, indent = 'empty'):
 
     inner_space = ' ' * depth
     if not isinstance(value, dict):
-        return f"{inner_space}{INDENTS[indent]}{key}: {value}"
+        return f"{INDENTS[indent]}{inner_space}{key}: {value}"
 
     inner_lines = []
     for inner_key, inner_value in value.items():
         inner_lines.append(to_string(inner_key, inner_value, depth + 4))
 
-    closing_bracket_indent = (depth + 2) * ' '
-    return f"{inner_space}{INDENTS[indent]}{key}: " + "\n".join(["{", *inner_lines, f"{closing_bracket_indent}{'}'}"])
+    return f"{inner_space}{key}: " + "\n".join(["{", *inner_lines, f"{inner_space}{'2}'}"])
 
 
 def prepare_value(value: str):
@@ -75,16 +76,3 @@ def prepare_value(value: str):
         value = ' '
 
     return value
-"""
-##    Константы для отступов:
-
-BASE_INDENT = 4
-BRACKET_OFFSET = 2
-
-Улучшенный render():
-closing_indent = max(0, depth - BRACKET_OFFSET) * ' '
-
-Улучшенный to_string():
-closing_indent = (depth + BRACKET_OFFSET) * ' '
-
-"""
