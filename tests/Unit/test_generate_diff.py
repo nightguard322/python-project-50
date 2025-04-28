@@ -1,0 +1,22 @@
+import pytest
+from pathlib import Path
+from gendiff.gendiff import generate_diff
+from gendiff.scripts.gendiff import parse_file
+
+TEST_CASES = [
+    ('file1.json', 'file2.json', 'result.txt'),
+    ('file1_nested.json', 'file2_nested.json', 'result_nested.txt')
+]
+
+@pytest.fixture
+def fixtures_path():
+    return Path(__file__).parent.parent / "fixtures"
+
+@pytest.mark.parametrize("file1, file2, expected", TEST_CASES)
+def test_generated_diff(file1, file2, expected, fixtures_path):
+    file1_data = parse_file(fixtures_path / file1)
+    file2_data = parse_file(fixtures_path / file2)
+    expected = (fixtures_path / expected).read_text()
+
+    result = generate_diff(file1_data, file2_data)
+    assert result == expected
