@@ -32,7 +32,7 @@ def stylish(data: dict) -> str:
     def render(current, depth=0):
         res = []
         for key, inner_data in current.items():
-            value = prepare_value(inner_data.get('value', inner_data))
+            value = inner_data.get('value', inner_data)
             status = inner_data.get('status', None)
 
             if status == 'changed':
@@ -47,14 +47,15 @@ def stylish(data: dict) -> str:
         closing_bracket_indent = (depth - 2) * ' '
         return "\n".join(["{", *res, f"{closing_bracket_indent}{"}"}"])
 
-    inner_strings = render(data)
+    inner_strings = render(data, 2)
     return inner_strings
 
 def to_string(key, value, depth = 0, indent = 'empty'):
 
     inner_space = ' ' * depth
     if not isinstance(value, dict):
-        return f"{inner_space}{INDENTS[indent]}{key}: {value}"
+        prepared = prepare_value(value)
+        return f"{inner_space}{INDENTS[indent]}{key}: {prepared}"
 
     inner_lines = []
     for inner_key, inner_value in value.items():
@@ -65,16 +66,14 @@ def to_string(key, value, depth = 0, indent = 'empty'):
 
 
 def prepare_value(value: str):
-    if value == True:
-        value = 'true'
+    value_mapping = {
+        True: 'true',
+        False: 'false',
+        # '': ' ',
+        None: 'null'
+    }
     
-    if value == False:
-        value = 'false'
-    
-    if value == '':
-        value = ' '
-
-    return value
+    return value_mapping.get(value, value)
 """
 Анализ вашего рабочего решения
 Базовая структура:

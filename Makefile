@@ -11,4 +11,4 @@ test:
 	uv run pytest
 	
 test-coverage:
-	uv run pytest --cov=hexlet-code
+	uv run pytest --cov=gendiff
