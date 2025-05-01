@@ -17,4 +17,4 @@ test-coverage:
 	uv run pytest --cov=gendiff --cov-report=html tests/
 
 check:
-	ruff check
+	. .venv/bin/activate && ruff check .
