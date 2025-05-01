@@ -13,7 +13,7 @@ TEST_CASES = [
 
 @pytest.fixture
 def fixtures_path():
-    return Path(__file__).parent.parent / "fixtures"
+    return Path(__file__).parent.parent / "test_data"
 
 
 @pytest.mark.parametrize("file1, file2, expected", TEST_CASES)

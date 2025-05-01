@@ -16,5 +16,5 @@ test:
 test-coverage:
 	uv run pytest --cov=gendiff --cov-report=html tests/
 
-lint:
+check:
 	ruff check .

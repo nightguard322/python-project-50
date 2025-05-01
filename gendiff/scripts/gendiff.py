@@ -7,7 +7,7 @@ from gendiff.gendiff import generate_diff
 
 
 def parse_file(filename: str):
-    fixtures_path = Path(__file__).parent.parent.parent / "tests" / "fixtures"
+    fixtures_path = Path(__file__).parent.parent.parent / "tests" / "test_data"
     file_path = fixtures_path / filename
     if not file_path.exists():
         raise FileNotFoundError(f"File {file_path} does not exists")
