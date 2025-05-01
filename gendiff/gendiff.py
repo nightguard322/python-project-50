@@ -4,6 +4,8 @@ INDENTS = {
     'empty': '  ',
     'unchanged': '  '
 }
+
+
 def generate_diff(file1: dict, file2: dict):
 
     def make_diff(file1: dict, file2: dict):
@@ -17,15 +19,25 @@ def generate_diff(file1: dict, file2: dict):
             else:
                 if file1[key] == file2[key]:
                     diff[key] = {'status': 'unchanged', 'value': file1[key]}
-                elif isinstance(file1[key], dict) and isinstance(file2[key], dict):
-                    diff[key] = {'status': 'nested', 'value': make_diff(file1[key], file2[key])}
+                elif (
+                    isinstance(file1[key], dict) 
+                    and isinstance(file2[key], dict)
+                    ):
+                    diff[key] = {
+                        'status': 'nested', 
+                        'value': make_diff(file1[key], file2[key])
+                    }
                 else:
-                    diff[key] = {'status': 'changed','value': (file1[key], file2[key])}
+                    diff[key] = {
+                        'status': 'changed',
+                        'value': (file1[key], file2[key])
+                    }
         return diff
 
     generated = make_diff(file1, file2)
 
     return stylish(generated)
+
 
 def stylish(data: dict) -> str:
 
@@ -50,7 +62,8 @@ def stylish(data: dict) -> str:
     inner_strings = render(data, 2)
     return inner_strings
 
-def to_string(key, value, depth = 0, indent = 'empty'):
+
+def to_string(key, value, depth=0, indent='empty'):
 
     inner_space = ' ' * depth
     if not isinstance(value, dict):
@@ -62,7 +75,11 @@ def to_string(key, value, depth = 0, indent = 'empty'):
         inner_lines.append(to_string(inner_key, inner_value, depth + 4))
 
     closing_bracket_indent = (depth + 2) * ' '
-    return f"{inner_space}{INDENTS[indent]}{key}: " + "\n".join(["{", *inner_lines, f"{closing_bracket_indent}{'}'}"])
+    return (
+        f"{inner_space}{INDENTS[indent]}{key}: " 
+        + 
+        "\n".join(["{", *inner_lines, f"{closing_bracket_indent}{'}'}"])
+        )
 
 
 def prepare_value(value: str):
@@ -74,91 +91,3 @@ def prepare_value(value: str):
     }
     
     return value_mapping.get(value, value)
-"""
-Анализ вашего рабочего решения
-Базовая структура:
-
-render() рекурсивно обрабатывает данные
-
-to_string() форматирует отдельные строки
-
-Ключевые моменты в render():
-
-python
-closing_bracket_indent = (depth - 2) * ' '
-return "\n".join(["{", *res, f"{closing_bracket_indent}{"}"}"])
-Открывающая { идёт без отступа
-
-Закрывающая } получает отступ depth - 2
-
-Логика to_string():
-
-Для простых значений: {inner_space}{INDENTS[indent]}{key}: {value}
-
-Для словарей:
-
-python
-closing_bracket_indent = (depth + 2) * ' '
-return f"{inner_space}{INDENTS[indent]}{key}: " + "\n".join(["{", *inner_lines, f"{closing_bracket_indent}{'}'}"])
-Почему это работает?
-Система отступов:
-
-Базовый отступ = depth пробелов
-
-Для вложенных элементов:
-
-+4 к глубине для содержимого
-
-+2 для закрывающей скобки (чтобы выровнять под ключом)
-
-Магия чисел (-2 и +2):
-
-depth - 2 в render() компенсирует:
-
-4 пробела стандартного отступа
-
-2 пробела для выравнивания относительно родительского ключа
-
-depth + 2 в to_string() создаёт:
-
-Выравнивание закрывающей скобки посередине между уровнями
-
-Пример для depth = 4:
-
-{
-    key: {
-        nested: value
-      }  # depth + 2 = 6 пробелов
-  }  # depth - 2 = 2 пробела
-Как сделать более понятным?
-Константы для отступов:
-
-python
-BASE_INDENT = 4
-BRACKET_OFFSET = 2
-Улучшенный render():
-
-python
-closing_indent = max(0, depth - BRACKET_OFFSET) * ' '
-Улучшенный to_string():
-
-python
-closing_indent = (depth + BRACKET_OFFSET) * ' '
-Итоговый совет
-Ваше решение работает, потому что:
-
-Вы эмпирически подобрали правильные коэффициенты (-2 и +2)
-
-Эти значения компенсируют друг друга в рекурсии
-
-Система сохраняет целостность при любой глубине вложенности
-
-Для большей ясности можно:
-
-Добавить комментарии к "магическим числам"
-
-Вынести их в константы с понятными названиями
-
-Протестировать на глубоко вложенных структурах
-
-"""
