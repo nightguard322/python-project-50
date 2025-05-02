@@ -1,20 +1,8 @@
 import argparse
-import json
 import sys
-from pathlib import Path
 
-from gendiff.gendiff import generate_diff
-
-
-def parse_file(filename: str):
-    fixtures_path = Path(__file__).parent.parent.parent / "tests" / "test_data"
-    file_path = fixtures_path / filename
-    if not file_path.exists():
-        raise FileNotFoundError(f"File {file_path} does not exists")
-    if not file_path.is_file():
-        raise ValueError(f"{file_path} is not a file")
-    with file_path.open() as f: 
-        return json.load(f)
+from src.core import generate_diff
+from src.utils.parser import parse_file
 
 
 def main():
@@ -25,6 +13,7 @@ def main():
     parser.add_argument('second_file')
     parser.add_argument('-f', '--format', help='set format of output')
     args = parser.parse_args()
+    print(args)
     try:
         file1 = parse_file(args.first_file)
         file2 = parse_file(args.second_file)
