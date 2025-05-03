@@ -1,6 +1,8 @@
 import json
-import yaml
 from pathlib import Path
+
+import yaml
+
 
 def parse_file(filename: str) -> None:
     path_to_files = Path(__file__).parent.parent.parent / "tests" / "test_data"
@@ -12,6 +14,7 @@ def parse_file(filename: str) -> None:
         raise ValueError(f"{filepath} is not a file")
 
     return open_file(filepath)
+
 
 def open_file(file_path) -> None:
     """
@@ -30,7 +33,7 @@ def open_file(file_path) -> None:
         json.JSONDecodeError: JSON parsing error
     """
     with file_path.open() as file:
-        match(file_path.suffix.lower()):
+        match (file_path.suffix.lower()):
             case '.json':
                 return json.load(file)
             case '.yaml' | '.yml':

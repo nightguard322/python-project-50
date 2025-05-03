@@ -22,7 +22,7 @@ def fixtures_path():
 def test_generated_diff(file1, file2, expected, fixtures_path):
     file1_data = parse_file(fixtures_path / file1)
     file2_data = parse_file(fixtures_path / file2)
-    expected = (fixtures_path / expected).read_text()
+    expected = (fixtures_path / "stylish" / expected).read_text()
 
-    result = generate_diff(file1_data, file2_data)
+    result = generate_diff(file1_data, file2_data, 'stylish')
     assert result == expected

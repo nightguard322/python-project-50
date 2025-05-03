@@ -67,10 +67,10 @@ def stylish(data: dict) -> str:
 
 
 def stylish_to_string(key, value, depth=0, indent='empty'):
-
+    prepare = make_preparer()
     inner_space = ' ' * depth
     if not isinstance(value, dict):
-        prepared = prepare_value(value)
+        prepared = prepare(value)
         return f"{inner_space}{INDENTS[indent]}{key}: {prepared}"
 
     inner_lines = []
@@ -85,23 +85,26 @@ def stylish_to_string(key, value, depth=0, indent='empty'):
         )
 
 
-def prepare_value(value: str):
-    if isinstance(value, dict):
-        return '[complex value]'
+def make_preparer(quotes: bool = False):
+    def prepare(value):
+        if isinstance(value, dict):
+            return '[complex value]'
+        
+        if value is None:
+            return 'null'
+        
+        if isinstance(value, bool):
+            return 'true' if value else 'false'
     
-    value_mapping = {
-        True: 'true',
-        False: 'false',
-        # '': ' ',
-        None: 'null'
-    }
-    
-    return value_mapping.get(value, value)
+        return f"'{value}'" if quotes else value
+    return prepare
+
 
 def plain(diff: dict) -> str:
 
     res = []
-    def walk(current, path, parent=None):
+
+    def walk(current, path):
 
         for key, inner_data in current.items():
             status = inner_data.get('status', 'unchanged')
@@ -114,38 +117,42 @@ def plain(diff: dict) -> str:
             if status == 'nested':
                 walk(inner_data['value'], new_path)
             else:
-                res.append(plain_to_string(status, inner_data['value'], new_path))
+                res.append(
+                    plain_to_string(
+                        status,
+                        inner_data['value'],
+                        new_path)
+                    )
 
     walk(diff, [])
     return "\n".join(res)
 
 
 def plain_to_string(status, value, path):
+
     property_path = '.'.join(path)
-
-    if isinstance(value, dict):
-        value = '[complex value]'
-
-    match(status):
+    prepare = make_preparer(quotes=True)
+    match (status):
         case 'removed':
-            return f"Property {property_path} was removed"
+            return f"Property {prepare(property_path)} was removed"
         case 'added':
             return (
-                f"Property {property_path} "
-                f"was added with value: {prepare_value(value)}"
+                f"Property {prepare(property_path)} "
+                f"was added with value: {prepare(value)}"
             )
         case 'changed':
             old_value, new_value = value
             return (
-                f"Property {property_path} was updated. "
-                f"From {prepare_value(old_value)} "
-                f"to {prepare_value(new_value)}"
+                f"Property {prepare(property_path)} was updated. "
+                f"From {prepare(old_value)} "
+                f"to {prepare(new_value)}"
             )
         case _:
             raise ValueError('Wrong value')
         
+
 def get_format(format: str, data) -> None:
-    match(format):
+    match (format):
         case 'stylish':
             return stylish(data)
         case 'plain':
