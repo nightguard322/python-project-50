@@ -157,5 +157,7 @@ def get_format(format: str, data) -> None:
             return stylish(data)
         case 'plain':
             return plain(data)
+        case 'json':
+            return data
         case _:
             raise ValueError(f"Wrong format - {format}")
