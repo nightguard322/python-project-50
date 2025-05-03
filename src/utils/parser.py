@@ -3,7 +3,6 @@ import yaml
 from pathlib import Path
 
 def parse_file(filename: str) -> None:
-    print(filename)
     path_to_files = Path(__file__).parent.parent.parent / "tests" / "test_data"
     filepath = path_to_files / filename
     if not filepath.exists():

@@ -6,7 +6,7 @@ INDENTS = {
 }
 
 
-def generate_diff(file1: dict, file2: dict):
+def generate_diff(file1: dict, file2: dict, format='stylish'):
 
     def make_diff(file1: dict, file2: dict):
         all_keys = set(file1) | set(file2)
@@ -36,7 +36,10 @@ def generate_diff(file1: dict, file2: dict):
 
     generated = make_diff(file1, file2)
 
-    return stylish(generated)
+    try:
+        return get_format(format, generated)
+    except ValueError as e:
+        print(f"Error: {e}")
 
 
 def stylish(data: dict) -> str:
@@ -49,13 +52,13 @@ def stylish(data: dict) -> str:
 
             if status == 'changed':
                 old_value, new_value = value
-                res.append(to_string(key, old_value, depth, 'removed'))
-                res.append(to_string(key, new_value, depth, 'added'))
+                res.append(stylish_to_string(key, old_value, depth, 'removed'))
+                res.append(stylish_to_string(key, new_value, depth, 'added'))
             elif status == 'nested':
                 value = render(value, depth + 4)
-                res.append(to_string(key, value, depth))
+                res.append(stylish_to_string(key, value, depth))
             else:
-                res.append(to_string(key, value, depth, status))
+                res.append(stylish_to_string(key, value, depth, status))
         closing_bracket_indent = (depth - 2) * ' '
         return "\n".join(["{", *res, f"{closing_bracket_indent}{"}"}"])
 
@@ -63,7 +66,7 @@ def stylish(data: dict) -> str:
     return inner_strings
 
 
-def to_string(key, value, depth=0, indent='empty'):
+def stylish_to_string(key, value, depth=0, indent='empty'):
 
     inner_space = ' ' * depth
     if not isinstance(value, dict):
@@ -72,7 +75,7 @@ def to_string(key, value, depth=0, indent='empty'):
 
     inner_lines = []
     for inner_key, inner_value in value.items():
-        inner_lines.append(to_string(inner_key, inner_value, depth + 4))
+        inner_lines.append(stylish_to_string(inner_key, inner_value, depth + 4))
 
     closing_bracket_indent = (depth + 2) * ' '
     return (
@@ -83,6 +86,9 @@ def to_string(key, value, depth=0, indent='empty'):
 
 
 def prepare_value(value: str):
+    if isinstance(value, dict):
+        return '[complex value]'
+    
     value_mapping = {
         True: 'true',
         False: 'false',
@@ -91,3 +97,58 @@ def prepare_value(value: str):
     }
     
     return value_mapping.get(value, value)
+
+def plain(diff: dict) -> str:
+
+    res = []
+    def walk(current, path, parent=None):
+
+        for key, inner_data in current.items():
+            status = inner_data.get('status', 'unchanged')
+
+            if status == 'unchanged':
+                continue
+            
+            new_path = path + [key]
+
+            if status == 'nested':
+                walk(inner_data['value'], new_path)
+            else:
+                res.append(plain_to_string(status, inner_data['value'], new_path))
+
+    walk(diff, [])
+    return "\n".join(res)
+
+
+def plain_to_string(status, value, path):
+    property_path = '.'.join(path)
+
+    if isinstance(value, dict):
+        value = '[complex value]'
+
+    match(status):
+        case 'removed':
+            return f"Property {property_path} was removed"
+        case 'added':
+            return (
+                f"Property {property_path} "
+                f"was added with value: {prepare_value(value)}"
+            )
+        case 'changed':
+            old_value, new_value = value
+            return (
+                f"Property {property_path} was updated. "
+                f"From {prepare_value(old_value)} "
+                f"to {prepare_value(new_value)}"
+            )
+        case _:
+            raise ValueError('Wrong value')
+        
+def get_format(format: str, data) -> None:
+    match(format):
+        case 'stylish':
+            return stylish(data)
+        case 'plain':
+            return plain(data)
+        case _:
+            raise ValueError(f"Wrong format - {format}")
