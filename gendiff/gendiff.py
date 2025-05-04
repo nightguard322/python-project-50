@@ -10,7 +10,7 @@ def generate_diff(file1: dict, file2: dict, format='stylish'):
 
     def make_diff(file1: dict, file2: dict):
         if not isinstance(file1, dict) or not isinstance(file2, dict):
-            raise ValueError('Wrong file types, must be dicts')
+            raise ValueError(f"file1 - {file1}, file2 - {file2}")
         
         all_keys = set(file1) | set(file2)
         diff = {}
