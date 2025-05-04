@@ -17,9 +17,7 @@ def generate_diff(file1: dict, file2: dict, format='stylish'):
             elif key not in file1:
                 diff[key] = {'status': 'added', 'value': file2[key]}
             else:
-                if file1[key] == file2[key]:
-                    diff[key] = {'status': 'unchanged', 'value': file1[key]}
-                elif (
+                if (
                     isinstance(file1[key], dict) 
                     and isinstance(file2[key], dict)
                     ):
@@ -27,6 +25,8 @@ def generate_diff(file1: dict, file2: dict, format='stylish'):
                         'status': 'nested', 
                         'value': make_diff(file1[key], file2[key])
                     }
+                elif file1[key] == file2[key]:
+                    diff[key] = {'status': 'unchanged', 'value': file1[key]}
                 else:
                     diff[key] = {
                         'status': 'changed',
