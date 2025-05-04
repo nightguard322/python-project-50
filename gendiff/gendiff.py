@@ -101,6 +101,9 @@ def make_preparer(quotes: bool = False):
         
         if isinstance(value, bool):
             return 'true' if value else 'false'
+        
+        if isinstance(value, int):
+            return value
     
         return f"'{value}'" if quotes else value
     return prepare
