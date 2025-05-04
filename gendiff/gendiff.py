@@ -10,7 +10,7 @@ INDENTS = {
 }
 
 
-def generate_diff(file1: dict, file2: dict, format):
+def generate_diff(file1: dict, file2: dict, format='stylish'):
 
     def make_diff(file1: dict, file2: dict):
         if not isinstance(file1, dict) or not isinstance(file2, dict):
