@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-from gendiff import generate_diff, parse_file
+from gendiff import generate_diff
 
 
 def main():
