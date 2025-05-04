@@ -19,7 +19,6 @@ def main():
             file2 = args.second_file
         except (FileNotFoundError, ValueError) as e:
             print(f"Error: {e}", file=sys.stderr)
-            sys.exit(1)
         format = args.format if args.format else 'stylish'
         return generate_diff(file1, file2, format)
     except Exception as e:
