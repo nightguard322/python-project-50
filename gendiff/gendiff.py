@@ -9,6 +9,9 @@ INDENTS = {
 def generate_diff(file1: dict, file2: dict, format='stylish'):
 
     def make_diff(file1: dict, file2: dict):
+        if not isinstance(file1, dict) or not isinstance(file2, dict):
+            raise ValueError('Wrong file types, must be dicts')
+        
         all_keys = set(file1) | set(file2)
         diff = {}
         for key in sorted(all_keys):
@@ -34,9 +37,8 @@ def generate_diff(file1: dict, file2: dict, format='stylish'):
                     }
         return diff
 
-    generated = make_diff(file1, file2)
-
     try:
+        generated = make_diff(file1, file2)
         return get_format(format, generated)
     except ValueError as e:
         print(f"Error: {e}")
