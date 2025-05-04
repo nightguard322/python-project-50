@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from src.core import generate_diff
-from src.gendiff.gendiff import parse_file
+from gendiff import generate_diff
+from gendiff.gendiff import parse_file
 
 TEST_CASES = [
     ('file1.json', 'file2.json', 'result.txt'),

@@ -1,8 +1,9 @@
 import argparse
 import sys
 
-from src.core import generate_diff
-from src.utils.parser import parse_file
+from core import stylish
+from core import generate_diff
+from utils.parser import parse_file
 
 
 def main():

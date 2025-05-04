@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from src.gendiff.gendiff import parse_file
+from gendiff.gendiff import parse_file
 
 
 def test_parse_file_valid_json(tmp_path):
