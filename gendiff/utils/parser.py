@@ -5,8 +5,7 @@ import yaml
 
 
 def parse_file(filename: str) -> None:
-    path_to_files = Path(__file__).parent.parent.parent / "tests" / "test_data"
-    filepath = path_to_files / filename
+    filepath = Path(filename)
     if not filepath.exists():
         raise FileNotFoundError(f"file {filepath} not found")
 
