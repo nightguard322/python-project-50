@@ -5,7 +5,16 @@ import yaml
 
 
 def parse_file(filename: str) -> None:
-    filepath = Path(filename)
+    """
+    Return text file data
+
+    Args:
+        filename: Path to file, str
+    Return:
+        text file data
+    """
+
+    filepath = filename if isinstance(filename, Path) else Path(filename)
     if not filepath.exists():
         raise FileNotFoundError(f"file {filepath} not found")
 

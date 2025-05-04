@@ -19,8 +19,8 @@ def fixtures_path():
 
 @pytest.mark.parametrize("file1, file2, expected", TEST_CASES)
 def test_plain_formatter(file1, file2, expected, fixtures_path):
-    file1_data = parse_file(fixtures_path / file1)
-    file2_data = parse_file(fixtures_path / file2)
+    file1_data = fixtures_path / file1
+    file2_data = fixtures_path / file2
     expected = (fixtures_path / "plain" / expected).read_text()
 
     result = generate_diff(file1_data, file2_data, "plain")
@@ -29,8 +29,8 @@ def test_plain_formatter(file1, file2, expected, fixtures_path):
 
 @pytest.mark.parametrize("file1, file2, expected", TEST_CASES)
 def test_stylish_formatter(file1, file2, expected, fixtures_path):
-    file1_data = parse_file(fixtures_path / file1)
-    file2_data = parse_file(fixtures_path / file2)
+    file1_data = fixtures_path / file1
+    file2_data = fixtures_path / file2
     expected = (fixtures_path / "stylish" / expected).read_text()
 
     result = generate_diff(file1_data, file2_data, 'stylish')

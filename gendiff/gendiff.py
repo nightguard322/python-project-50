@@ -1,4 +1,4 @@
-from gendiff import parse_file
+from .utils.parser import parse_file
 
 INDENTS = {
     'removed': '- ',
