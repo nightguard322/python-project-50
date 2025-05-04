@@ -2,8 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from gendiff import generate_diff
-from cli.gendiff import parse_file
+from gendiff import generate_diff, parse_file
 
 TEST_CASES = [
     ('file1.json', 'file2.json', 'result.txt'),
@@ -17,6 +16,15 @@ TEST_CASES = [
 def fixtures_path():
     return Path(__file__).parent.parent / "test_data"
 
+
+@pytest.mark.parametrize("file1, file2, expected", TEST_CASES)
+def test_generated_diff(file1, file2, expected, fixtures_path):
+    file1_data = parse_file(fixtures_path / file1)
+    file2_data = parse_file(fixtures_path / file2)
+    expected = (fixtures_path / "plain" / expected).read_text()
+
+    result = generate_diff(file1_data, file2_data, "plain")
+    assert result == expected
 
 @pytest.mark.parametrize("file1, file2, expected", TEST_CASES)
 def test_generated_diff(file1, file2, expected, fixtures_path):
