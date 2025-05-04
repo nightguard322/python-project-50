@@ -1,3 +1,5 @@
+from gendiff import parse_file
+
 INDENTS = {
     'removed': '- ',
     'added': '+ ',
@@ -38,7 +40,9 @@ def generate_diff(file1: dict, file2: dict, format='stylish'):
         return diff
 
     try:
-        generated = make_diff(file1, file2)
+        file1_data = parse_file(file1)
+        file2_data = parse_file(file2)
+        generated = make_diff(file1_data, file2_data)
         return get_format(format, generated)
     except ValueError as e:
         print(f"Error: {e}")
