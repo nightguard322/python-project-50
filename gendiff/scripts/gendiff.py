@@ -18,7 +18,8 @@ def main():
     except (FileNotFoundError, ValueError) as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
-    return generate_diff(file1, file2, args.format)
+    format = args.format if args.format else 'stylish'
+    return generate_diff(file1, file2, format)
 
 
 if __name__ == 'main':
