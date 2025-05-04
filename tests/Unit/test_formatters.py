@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from gendiff import generate_diff, parse_file
+from gendiff import generate_diff
 
 TEST_CASES = [
     ('file1.json', 'file2.json', 'result.txt'),
