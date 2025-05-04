@@ -1,6 +1,4 @@
 import json
-import logging
-import sys
 
 from .utils.parser import parse_file
 
@@ -12,54 +10,45 @@ INDENTS = {
 }
 
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    stream=sys.stderr
-)
-
 def generate_diff(file1: dict, file2: dict, format='stylish'):
-    logging.debug(f"Processing files: {file1} and {file2}")
-    try:
-        def make_diff(file1: dict, file2: dict):
-            if not isinstance(file1, dict) or not isinstance(file2, dict):
-                raise ValueError(f"file1 - {file1}, file2 - {file2}")
-            
-            all_keys = set(file1) | set(file2)
-            diff = {}
-            for key in sorted(all_keys):
-                if key not in file2:
-                    diff[key] = {'status': 'removed', 'value': file1[key]}
-                elif key not in file1:
-                    diff[key] = {'status': 'added', 'value': file2[key]}
-                else:
-                    if (
-                        isinstance(file1[key], dict) 
-                        and isinstance(file2[key], dict)
-                        ):
-                        diff[key] = {
-                            'status': 'nested', 
-                            'value': make_diff(file1[key], file2[key])
-                        }
-                    elif file1[key] == file2[key]:
-                        diff[key] = {'status': 'unchanged', 'value': file1[key]}
-                    else:
-                        diff[key] = {
-                            'status': 'changed',
-                            'value': (file1[key], file2[key])
-                        }
-            return diff
 
-        file1_data = parse_file(file1)
-        file2_data = parse_file(file2)
-        try:
-            generated = make_diff(file1_data, file2_data)
-            return get_format(format, generated)
-        except ValueError as e:
-            print(f"Error with gendiff: {e}")
-    except Exception as e:
-        logging.error(f"Error processing files: {e}")
-        raise
+    def make_diff(file1: dict, file2: dict):
+        if not isinstance(file1, dict) or not isinstance(file2, dict):
+            raise ValueError(f"file1 - {file1}, file2 - {file2}")
+        
+        all_keys = set(file1) | set(file2)
+        diff = {}
+        for key in sorted(all_keys):
+            if key not in file2:
+                diff[key] = {'status': 'removed', 'value': file1[key]}
+            elif key not in file1:
+                diff[key] = {'status': 'added', 'value': file2[key]}
+            else:
+                if (
+                    isinstance(file1[key], dict) 
+                    and isinstance(file2[key], dict)
+                    ):
+                    diff[key] = {
+                        'status': 'nested', 
+                        'value': make_diff(file1[key], file2[key])
+                    }
+                elif file1[key] == file2[key]:
+                    diff[key] = {'status': 'unchanged', 'value': file1[key]}
+                else:
+                    diff[key] = {
+                        'status': 'changed',
+                        'value': (file1[key], file2[key])
+                    }
+        return diff
+
+    file1_data = parse_file(file1)
+    file2_data = parse_file(file2)
+    try:
+        generated = make_diff(file1_data, file2_data)
+        return get_format(format, generated)
+    except ValueError as e:
+        print(f"Error with gendiff: {e}")
+
 
 def stylish(data: dict) -> str:
 
