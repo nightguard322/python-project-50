@@ -1,7 +1,6 @@
 import argparse
 import sys
 
-from core import stylish
 from core import generate_diff
 from utils.parser import parse_file
 

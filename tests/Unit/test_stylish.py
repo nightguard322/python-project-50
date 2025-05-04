@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from gendiff import generate_diff
+from core import generate_diff
 from gendiff.gendiff import parse_file
 
 TEST_CASES = [
