@@ -22,11 +22,12 @@ def main():
         except (FileNotFoundError, ValueError) as e:
             print(f"Error: {e}", file=sys.stderr)
         format = args.format if args.format else 'stylish'
-        return generate_diff(file1, file2, format)
+        print(generate_diff(file1, file2, format))
+        sys.exit(0)
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         traceback.print_exc()
-
+        sys.exit(1)
 
 if __name__ == 'main':
     main()
