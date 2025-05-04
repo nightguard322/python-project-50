@@ -9,7 +9,9 @@ def main():
     try:
         parser = argparse.ArgumentParser(
             prog='gendiff',
-            description='Compares two configuration files and shows a difference.')
+            description=(
+                'Compares two configuration files and shows a difference.')
+            )
         parser.add_argument('first_file')
         parser.add_argument('second_file')
         parser.add_argument('-f', '--format', help='set format of output')
@@ -24,7 +26,6 @@ def main():
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
         traceback.print_exc()
-
 
 
 if __name__ == 'main':
