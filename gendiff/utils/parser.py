@@ -45,6 +45,9 @@ def open_file(file_path) -> None:
             case '.json':
                 return json.load(file)
             case '.yaml' | '.yml':
-                return yaml.safe_load(file)
+                try:
+                    return yaml.safe_load(file)
+                except yaml.YAMLError as e:
+                    print(f"Invalid YAML: {e}")
             case _:
                 raise ValueError(f"Unknown file extension - {file_path.suffix}")
