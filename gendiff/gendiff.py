@@ -1,4 +1,5 @@
 from .utils.parser import parse_file
+import json
 
 INDENTS = {
     'removed': '- ',
@@ -167,6 +168,6 @@ def get_format(format: str, data) -> None:
         case 'plain':
             return plain(data)
         case 'json':
-            return data
+            return json.dumps(data, indent=2)
         case _:
             raise ValueError(f"Wrong format - {format}")
